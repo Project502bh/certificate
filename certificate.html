@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منشئ الشهادات الشامل - BFA</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 700px;
+            text-align: center;
+        }
+        h2 { color: #8b0000; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        h3 { color: #555; margin: 20px 0 10px 0; font-size: 16px; text-align: right; background: #f9f9f9; padding: 10px; border-radius: 4px; border-right: 4px solid #8b0000; }
+        
+        .form-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px; }
+        .sub-label { font-size: 11px; color: #888; margin-bottom: 5px; display: block;}
+        
+        input[type="file"], textarea, select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: #fff;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus { border-color: #8b0000; outline: none; }
+        
+        /* Grid Layouts */
+        .grid-row { display: flex; gap: 20px; text-align: right; }
+        .grid-col { flex: 1; }
+        .controls-row { display: flex; gap: 10px; margin-top: 5px; }
+
+        textarea { height: 100px; resize: vertical; font-family: 'Courier New', monospace; }
+        
+        button {
+            background-color: #8b0000;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(139, 0, 0, 0.2);
+        }
+        button:hover { background-color: #a00000; transform: translateY(-2px); }
+        .note { font-size: 14px; font-weight: bold; margin-top: 15px; min-height: 20px;}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>إعدادات الشهادة</h2>
+        
+        <div class="form-group">
+            <label>1. خلفية الشهادة (Background)</label>
+            <input type="file" id="bgImage" accept="image/*">
+        </div>
+
+        <div class="form-group">
+            <label>2. اسم البطولة (Title)</label>
+            <input type="text" id="champTitle" value="First Women’s Futsal Championship">
+        </div>
+
+        <h3>إعدادات الشعار (Logo - أعلى الصفحة)</h3>
+        <div class="form-group">
+            <label>صورة الشعار (logo.png)</label>
+            <input type="file" id="logoImage" accept="image/*">
+            
+            <div class="controls-row">
+                <div style="flex:1">
+                    <label class="sub-label">المكان:</label>
+                    <select id="logoPosition">
+                        <option value="center">وسط (Top Center)</option>
+                        <option value="left">يسار (Top Left)</option>
+                        <option value="right">يمين (Top Right)</option>
+                    </select>
+                </div>
+                <div style="flex:1">
+                    <label class="sub-label">الحجم (mm):</label>
+                    <input type="number" id="logoSize" value="30" min="10" max="100">
+                </div>
+            </div>
+        </div>
+
+        <h3>إعدادات التواقيع (Signatures)</h3>
+        <div class="grid-row">
+            <div class="grid-col">
+                <label>التوقيع الأيمن (Right)</label>
+                <input type="text" id="rightName" placeholder="الاسم" style="margin-bottom: 5px;">
+                <input type="text" id="rightTitle" placeholder="المنصب" style="margin-bottom: 5px;">
+                <label class="sub-label">صورة التوقيع (اختياري):</label>
+                <input type="file" id="rightSigImg" accept="image/*">
+            </div>
+
+            <div class="grid-col">
+                <label>التوقيع الأيسر (Left)</label>
+                <input type="text" id="leftName" placeholder="الاسم" style="margin-bottom: 5px;">
+                <input type="text" id="leftTitle" placeholder="المنصب" style="margin-bottom: 5px;">
+                <label class="sub-label">صورة التوقيع (اختياري):</label>
+                <input type="file" id="leftSigImg" accept="image/*">
+            </div>
+        </div>
+
+        <h3>إعدادات الختم (Stamp - أسفل الصفحة)</h3>
+        <div class="form-group">
+            <label>صورة الختم (stamp.png)</label>
+            <input type="file" id="stampImage" accept="image/*">
+            
+            <div class="controls-row">
+                <div style="flex:1">
+                    <label class="sub-label">المكان:</label>
+                    <select id="stampPosition">
+                        <option value="center">وسط (Center)</option>
+                        <option value="left">يسار (Left)</option>
+                        <option value="right">يمين (Right)</option>
+                    </select>
+                </div>
+                <div style="flex:1">
+                    <label class="sub-label">الحجم (mm):</label>
+                    <input type="number" id="stampSize" value="35" min="10" max="100">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>5. قائمة الأسماء (Names List)</label>
+            <textarea id="namesList" placeholder="Jawaher Saeed Mohammed&#10;Amal Ali Ahmed..."></textarea>
+        </div>
+
+        <button onclick="generatePDF()">إنشاء وتحميل PDF</button>
+        <div class="note" id="status"></div>
+    </div>
+
+    <script>
+        const readFile = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        };
+
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const statusDiv = document.getElementById('status');
+            
+            // قراءة المدخلات الأساسية
+            const bgInput = document.getElementById('bgImage');
+            const namesInput = document.getElementById('namesList').value;
+            const titleInput = document.getElementById('champTitle').value;
+            
+            // قراءة مدخلات الشعار (Logo)
+            const logoInput = document.getElementById('logoImage');
+            const logoPos = document.getElementById('logoPosition').value;
+            const logoSize = document.getElementById('logoSize').value;
+
+            // قراءة مدخلات الختم (Stamp)
+            const stampInput = document.getElementById('stampImage');
+            const stampPos = document.getElementById('stampPosition').value;
+            const stampSize = document.getElementById('stampSize').value;
+
+            // قراءة التواقيع
+            const rightName = document.getElementById('rightName').value;
+            const rightTitle = document.getElementById('rightTitle').value;
+            const rightSigInput = document.getElementById('rightSigImg');
+
+            const leftName = document.getElementById('leftName').value;
+            const leftTitle = document.getElementById('leftTitle').value;
+            const leftSigInput = document.getElementById('leftSigImg');
+
+            // التحقق
+            if (bgInput.files.length === 0) {
+                alert("يرجى اختيار ملف خلفية الشهادة أولاً.");
+                return;
+            }
+            if (!namesInput.trim()) {
+                alert("يرجى إدخال اسم واحد على الأقل.");
+                return;
+            }
+
+            statusDiv.innerText = "جاري معالجة الصور...";
+            statusDiv.style.color = "blue";
+
+            try {
+                // تحميل الملفات
+                const bgData = await readFile(bgInput.files[0]);
+                
+                let logoData = null;
+                if (logoInput.files.length > 0) logoData = await readFile(logoInput.files[0]);
+
+                let stampData = null;
+                if (stampInput.files.length > 0) stampData = await readFile(stampInput.files[0]);
+
+                let rightSigData = null;
+                if (rightSigInput.files.length > 0) rightSigData = await readFile(rightSigInput.files[0]);
+
+                let leftSigData = null;
+                if (leftSigInput.files.length > 0) leftSigData = await readFile(leftSigInput.files[0]);
+
+                // تجميع البيانات
+                const config = {
+                    title: titleInput,
+                    logo: { data: logoData, pos: logoPos, size: logoSize },
+                    stamp: { data: stampData, pos: stampPos, size: stampSize },
+                    signatures: {
+                        right: { name: rightName, title: rightTitle, img: rightSigData },
+                        left: { name: leftName, title: leftTitle, img: leftSigData }
+                    }
+                };
+
+                createPDF(bgData, namesInput, config, jsPDF);
+                
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerText = "حدث خطأ في تحميل الملفات.";
+                statusDiv.style.color = "red";
+            }
+        }
+
+        function createPDF(bgData, namesText, config, jsPDF) {
+            const width = 297; // mm (A4 Landscape)
+            const height = 210; // mm
+
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const names = namesText.split('\n').filter(n => n.trim() !== '');
+
+            names.forEach((name, index) => {
+                if (index > 0) doc.addPage(); 
+
+                // 1. الخلفية
+                doc.addImage(bgData, 'PNG', 0, 0, width, height);
+
+                // 2. الشعار (Logo) - في الجزء العلوي
+                if (config.logo.data) {
+                    const lSize = Number(config.logo.size);
+                    const lY = 15; // مسافة 15 ملم من الأعلى
+                    let lX = 0;
+
+                    if (config.logo.pos === 'left') {
+                        lX = 20; // هامش يسار
+                    } else if (config.logo.pos === 'right') {
+                        lX = width - lSize - 20; // هامش يمين
+                    } else {
+                        // Center
+                        lX = (width / 2) - (lSize / 2);
+                    }
+                    doc.addImage(config.logo.data, 'PNG', lX, lY, lSize, lSize);
+                }
+
+                // 3. النصوص الأساسية
+                doc.setTextColor(51, 51, 51); 
+
+                // العنوان الرئيسي
+                doc.setFontSize(36);
+                doc.setTextColor(197, 160, 101); // Gold
+                doc.setFont("helvetica", "bold");
+                // تم إنزال العنوان قليلاً لعدم التداخل مع الشعار
+                doc.text("Certificate of Appreciation", width / 2, 75, { align: "center" });
+
+                // المقدمة
+                doc.setFontSize(18);
+                doc.setTextColor(60, 60, 60);
+                doc.setFont("times", "normal");
+                doc.text("The Bahrain Football Association extends its sincere appreciation to", width / 2, 90, { align: "center" });
+
+                // اسم المستلم
+                doc.setFontSize(40);
+                doc.setTextColor(197, 160, 101);
+                doc.setFont("times", "italic");
+                doc.text(name.trim(), width / 2, 115, { align: "center" });
+                
+                // خط تحت اسم المستلم
+                doc.setDrawColor(200, 200, 200);
+                doc.line((width/2)-60, 120, (width/2)+60, 120);
+
+                // نص الشهادة
+                doc.setFontSize(16);
+                doc.setTextColor(50, 50, 50);
+                doc.setFont("times", "normal");
+                doc.text("for their valuable contribution to organizing the", width / 2, 140, { align: "center" });
+                
+                doc.setFont("times", "bold");
+                doc.text(config.title, width / 2, 150, { align: "center" });
+                
+                doc.setFont("times", "normal");
+                doc.text("and for their efforts that contributed to the success of the event.", width / 2, 160, { align: "center" });
+
+                // 4. التواقيع
+                const footerY = 185;
+                const sigWidth = 60;
+                const sigs = config.signatures;
+
+                // التوقيع الأيسر
+                if (sigs.left.name || sigs.left.title || sigs.left.img) {
+                    const leftX = 40;
+                    const centerX = leftX + (sigWidth / 2);
+                    if (sigs.left.img) {
+                        doc.addImage(sigs.left.img, 'PNG', leftX + 10, footerY - 25, 40, 20);
+                    } else if (sigs.left.name) {
+                        doc.setDrawColor(50, 50, 50);
+                        doc.line(leftX, footerY - 5, leftX + sigWidth, footerY - 5);
+                    }
+                    doc.setFont("times", "bold"); doc.setFontSize(12); doc.setTextColor(0, 0, 0);
+                    if (sigs.left.name) doc.text(sigs.left.name, centerX, footerY, { align: "center" });
+                    doc.setFont("times", "normal"); doc.setFontSize(10);
+                    if (sigs.left.title) doc.text(sigs.left.title, centerX, footerY + 5, { align: "center" });
+                }
+
+                // التوقيع الأيمن
+                if (sigs.right.name || sigs.right.title || sigs.right.img) {
+                    const rightX = width - 40 - sigWidth;
+                    const centerX = rightX + (sigWidth / 2);
+                    if (sigs.right.img) {
+                        doc.addImage(sigs.right.img, 'PNG', rightX + 10, footerY - 25, 40, 20);
+                    } else if (sigs.right.name) {
+                        doc.setDrawColor(50, 50, 50);
+                        doc.line(rightX, footerY - 5, rightX + sigWidth, footerY - 5);
+                    }
+                    doc.setFont("times", "bold"); doc.setFontSize(12); doc.setTextColor(0, 0, 0);
+                    if (sigs.right.name) doc.text(sigs.right.name, centerX, footerY, { align: "center" });
+                    doc.setFont("times", "normal"); doc.setFontSize(10);
+                    if (sigs.right.title) doc.text(sigs.right.title, centerX, footerY + 5, { align: "center" });
+                }
+
+                // 5. الختم (Stamp)
+                if (config.stamp.data) {
+                    const sSize = Number(config.stamp.size);
+                    const sY = 170 - (sSize / 2);
+                    let sX = 0;
+                    if (config.stamp.pos === 'left') sX = 50; 
+                    else if (config.stamp.pos === 'right') sX = width - sSize - 50; 
+                    else sX = (width / 2) - (sSize / 2);
+                    
+                    doc.addImage(config.stamp.data, 'PNG', sX, sY, sSize, sSize);
+                }
+            });
+
+            doc.save("BFA_Certificates_vFinal.pdf");
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "تم إنشاء الملف بنجاح!";
+            statusDiv.style.color = "green";
+        }
+    </script>
+</body>
+</html>
